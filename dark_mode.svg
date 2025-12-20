@@ -13,8 +13,10 @@
     .cc { fill: #616e7f; }
     text, tspan { white-space: pre; }
   </style>
-<rect width="40%" height="100%" rx="15" fill="#161b22"/>
-<text x="15" y="30" fill="#c9d1d9" class="ascii">
+
+  <rect width="40%" height="100%" rx="15" fill="#161b22"/>
+
+  <text x="15" y="30" fill="#c9d1d9">
     <tspan x="15" y="30">           g@M%@%%@N%Nw,,                   </tspan>
     <tspan x="15" y="50">        ,M*|`||*%gNM=]mM%g||%N,             </tspan>
     <tspan x="15" y="70">       p!``  '! |''` '''|||jhlj%w           </tspan>
@@ -40,92 +42,87 @@
     <tspan x="15" y="470">       @@@@@@@@%%kgki!|jjjj%k%@ .          </tspan>
     <tspan x="15" y="490">^['' %@@@@HH%b%k{illljkjj%%%% ; `,.      </tspan>
     <tspan x="15" y="510">=[' ` . %HH%%%%%H@gkilljjj%kk%c.   `'i     </tspan>
-</text>
-
-<text x="390" y="30" fill="#c9d1d9">
-<tspan x="390" y="30">parth@sachdeva</tspan>
-<tspan class="cc" id="age_data_dots"> ...................... </tspan>
-<tspan x="390" y="70" class="cc"></tspan>
-
-<tspan class="key">Uptime:</tspan><tspan class="cc" id="age_data_dots"> ...................... </tspan>
-
-<tspan class="value" id="age_data">25 years, 6 months, 29 days</tspan>
-
-<tspan x="390" y="150" class="cc"> </tspan>
-
-<tspan x="390" y="170" class="cc"> </tspan>
-<tspan class="key">Languages</tspan>
-
-<tspan class="key">Programming</tspan>
-
-<tspan class="cc"> ..... </tspan>
-
-<tspan class="value">Python, JavaScript, Go</tspan>
-
-<tspan x="390" y="190" class="cc"> </tspan>
-<tspan class="key">Languages</tspan>
-<tspan class="key">Computer</tspan>
-<tspan class="cc"> ......... </tspan>
-<tspan class="value">HTML, CSS, JSON, LaTeX, YAML</tspan>
-
-<tspan x="390" y="210" class="cc"> </tspan>
-<tspan class="key">Languages</tspan>
-<tspan class="key">Real</tspan>
-<tspan class="cc"> ......................... </tspan>
-<tspan class="value">English, Hindi</tspan>
-
-<tspan x="390" y="310">- Hobbies</tspan>
-<tspan x="390" y="250" class="cc">Software</tspan>
-<tspan class="cc"> .... </tspan>
-<tspan class="value">Android Modding, Beatbox, Drums</tspan>
-
-<tspan x="390" y="270" class="cc">Hardware</tspan>
-<tspan class="cc"> ... </tspan>
-<tspan class="value">Arduino, RasberryPi, BareMetal Servers, NUCs, SFF</tspan>
-
-<tspan x="390" y="310">- Contact</tspan>
-<tspan x="390" y="330" class="cc"></tspan>
-<tspan class="key">Email</tspan>
-<tspan class="key">Personal</tspan>
-<tspan class="cc"> ..................... </tspan>
-<tspan class="value">parthsachdeva14@gmail.com</tspan>
-
-<tspan x="390" y="370" class="cc"></tspan>
-<tspan class="key">Email</tspan>
-<tspan class="key">Work</tspan>
-<tspan class="cc"> ..................... </tspan>
-<tspan class="value">part@infiswift.tech</tspan>
-
-<tspan x="390" y="390" class="cc"></tspan>
-<tspan class="key">LinkedIn</tspan>
-<tspan class="cc"> .................................... </tspan>
-<tspan class="value">parpsyche</tspan>
-
-</text>
-<text x="380" y="40" fill="#c9d1d9">
-    <tspan class="value" font-size="20" font-weight="bold">parpsyche</tspan>
-
   </text>
+<text x="380" y="30" fill="#c9d1d9">
+<tspan x="410" y="30">parth@sachdeva</tspan>
+<tspan x="380" y="50" class="cc"></tspan>
+</text>
 
-  <text x="380" y="80" font-size="14">
+
+  <text x="380" y="50" font-size="14" fill="#c9d1d9">
     <tspan class="cc">Repos:</tspan>
-
     <tspan id="repo_data" class="value">15</tspan>
-
-    <tspan class="cc"> Stars:</tspan>
-
+    <tspan class="cc">  Stars:</tspan>
     <tspan id="star_data" class="value">12</tspan>
-
   </text>
 
-  <text x="380" y="110" font-size="14">
+  <text x="380" y="70" font-size="14" fill="#c9d1d9">
     <tspan class="cc">Followers:</tspan>
-
     <tspan id="follower_data" class="value">4</tspan>
-
-    <tspan class="cc"> Following:</tspan>
-
+    <tspan class="cc">  Following:</tspan>
     <tspan id="following_data" class="value">7</tspan>
+  </text>
 
+  <text x="370" y="120" fill="#c9d1d9">
+    <tspan class="key">Uptime:</tspan>
+    <tspan class="cc"> ........... </tspan>
+    <tspan class="value" id="uptime_data">25 years, 6 months, 29 days</tspan>
+  </text>
+
+  <text x="370" y="140" fill="#c9d1d9">
+    <tspan class="key">Programming Languages</tspan>
+    <tspan class="cc">... </tspan>
+    <tspan class="value">Python, JavaScript, Go</tspan>
+  </text>
+
+  <text x="370" y="160" fill="#c9d1d9">
+    <tspan class="key">Computer Languages</tspan>
+    <tspan class="cc">..</tspan>
+    <tspan class="value">HTML, CSS, JSON, TOON, YAML</tspan>
+  </text>
+
+  <text x="370" y="180" fill="#c9d1d9">
+    <tspan class="key">Spoken Languages</tspan>
+    <tspan class="cc"> ..... </tspan>
+    <tspan class="value">English, Hindi, Japanese</tspan>
+  </text>
+
+  <text x="370" y="230" fill="#c9d1d9">
+    <tspan>Hobbies:</tspan>
+  </text>
+
+  <text x="380" y="250" fill="#c9d1d9">
+    <tspan class="key">Software</tspan>
+    <tspan class="cc">......</tspan>
+    <tspan class="value">Android Modding, Beatbox, Drums</tspan>
+  </text>
+
+  <text x="380" y="270" fill="#c9d1d9">
+    <tspan class="key">Hardware</tspan>
+    <tspan class="cc">...</tspan>
+    <tspan class="value">Arduino, Pi, Bare Metal, NUCs, SFF</tspan>
+    <tspan class="value">NUCs, SFF</tspan>
+  </text>
+
+  <text x="370" y="320" fill="#c9d1d9">
+    <tspan>Contact:</tspan>
+  </text>
+
+  <text x="380" y="340" fill="#c9d1d9">
+    <tspan class="key"> Personal</tspan>
+    <tspan class="cc"> .......... </tspan>
+    <tspan class="value">parthsachdeva14@gmail.com</tspan>
+  </text>
+
+  <text x="380" y="360" fill="#c9d1d9">
+    <tspan class="key"> Work</tspan>
+    <tspan class="cc"> ................... </tspan>
+    <tspan class="value">parth@infiswift.tech</tspan>
+  </text>
+
+  <text x="390" y="380" fill="#c9d1d9">
+    <tspan class="key">LinkedIn</tspan>
+    <tspan class="cc"> .......................... </tspan>
+    <tspan class="value">parpsyche</tspan>
   </text>
 </svg>
