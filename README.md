@@ -3,4 +3,5 @@
     <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/parpsyche/parpsyche/main/dark_mode.svg">
     <img alt="Parth's GitHub Profile README" src="https://raw.githubusercontent.com/parpsyche/parpsyche/main/light_mode.svg">
   </picture>
+  [![roadmap.sh](https://roadmap.sh/card/tall/660aefacda1671f986f8b883?variant=dark&roadmaps=software-design-architecture%2Cpython%2Cbackend%2Cai-engineer)](https://roadmap.sh)
 </a>
