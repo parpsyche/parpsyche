@@ -37,6 +37,27 @@ jobs:
           curl -s -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
             "https://api.github.com/users/${{ github.repository_owner }}/repos?per_page=200" > repos.json
+      
+      - name: Calculate uptime from DOB
+        run: |
+          # Convert DOB to timestamp
+          dob_ts=$(date -d "2000-07-07" +%s)
+          now_ts=$(date +%s)
+
+          # Seconds lived
+          diff=$((now_ts - dob_ts))
+
+          # Break down to full years, months, days
+          years=$((diff / 31556926))
+          rem=$((diff % 31556926))
+          months=$((rem / 2629743))
+          rem=$((rem % 2629743))
+          days=$((rem / 86400))
+
+          uptime="${years} years, ${months} months, ${days} days"
+
+          echo "uptime=$uptime" >> $GITHUB_ENV
+
 
       - name: Calculate total stars
         run: |
@@ -59,6 +80,7 @@ jobs:
           sed -i "s/id=\"star_data\">[0-9]\+/id=\"star_data\">$stars/" dark_mode.svg
           sed -i "s/id=\"follower_data\">[0-9]\+/id=\"follower_data\">$followers/" dark_mode.svg
           sed -i "s/id=\"following_data\">[0-9]\+/id=\"following_data\">$following/" dark_mode.svg
+          sed -i "s/id=\"uptime_data\">[^<]*/id=\"uptime_data\">$uptime/" dark_mode.svg
 
       - name: Update light_mode.svg
         run: |
@@ -66,6 +88,7 @@ jobs:
           sed -i "s/id=\"star_data\">[0-9]\+/id=\"star_data\">$stars/" light_mode.svg
           sed -i "s/id=\"follower_data\">[0-9]\+/id=\"follower_data\">$followers/" light_mode.svg
           sed -i "s/id=\"following_data\">[0-9]\+/id=\"following_data\">$following/" light_mode.svg
+          sed -i "s/id=\"uptime_data\">[^<]*/id=\"uptime_data\">$uptime/" light_mode.svg
 
       - name: Commit changes if any
         run: |
