@@ -1,4 +1,4 @@
-name: Update GitHub Stats
+name: Update GitHub Stats SVG + JSON
 
 on:
   schedule:
@@ -9,26 +9,71 @@ permissions:
   contents: write
 
 jobs:
-  update:
+  update_svg:
     runs-on: ubuntu-latest
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Fetch GitHub Stats
+      - name: Fetch GitHub Stats (User)
         run: |
-          curl -H "Accept: application/vnd.github+json" \
+          curl -s -H "Accept: application/vnd.github+json" \
             -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/users/${{ github.repository_owner }} > github-stats.json
+            https://api.github.com/users/${{ github.repository_owner }} > user.json
+
+      - name: Extract base stats
+        run: |
+          repos=$(jq '.public_repos' user.json)
+          followers=$(jq '.followers' user.json)
+          following=$(jq '.following' user.json)
+
+          echo "repos=$repos" >> $GITHUB_ENV
+          echo "followers=$followers" >> $GITHUB_ENV
+          echo "following=$following" >> $GITHUB_ENV
+
+      - name: Fetch GitHub Stats (Repos)
+        run: |
+          curl -s -H "Accept: application/vnd.github+json" \
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/users/${{ github.repository_owner }}/repos?per_page=200" > repos.json
+
+      - name: Calculate total stars
+        run: |
+          stars=$(jq '[.[].stargazers_count] | add' repos.json)
+          echo "stars=$stars" >> $GITHUB_ENV
+
+      - name: Build compressed JSON
+        run: |
+          jq -c -n \
+            --arg repos "$repos" \
+            --arg stars "$stars" \
+            --arg followers "$followers" \
+            --arg following "$following" \
+            '{repos:($repos|tonumber),stars:($stars|tonumber),followers:($followers|tonumber),following:($following|tonumber)}' \
+            > github-stats.min.json
+
+      - name: Update dark_mode.svg
+        run: |
+          sed -i "s/id=\"repo_data\">[0-9]\+/id=\"repo_data\">$repos/" dark_mode.svg
+          sed -i "s/id=\"star_data\">[0-9]\+/id=\"star_data\">$stars/" dark_mode.svg
+          sed -i "s/id=\"follower_data\">[0-9]\+/id=\"follower_data\">$followers/" dark_mode.svg
+          sed -i "s/id=\"following_data\">[0-9]\+/id=\"following_data\">$following/" dark_mode.svg
+
+      - name: Update light_mode.svg
+        run: |
+          sed -i "s/id=\"repo_data\">[0-9]\+/id=\"repo_data\">$repos/" light_mode.svg
+          sed -i "s/id=\"star_data\">[0-9]\+/id=\"star_data\">$stars/" light_mode.svg
+          sed -i "s/id=\"follower_data\">[0-9]\+/id=\"follower_data\">$followers/" light_mode.svg
+          sed -i "s/id=\"following_data\">[0-9]\+/id=\"following_data\">$following/" light_mode.svg
 
       - name: Commit changes if any
         run: |
           if ! git diff --quiet; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add github-stats.json
-            git commit -m "Update GitHub stats"
+            git add github-stats.min.json dark_mode.svg light_mode.svg
+            git commit -m "Update GitHub stats + SVGs"
             git push
           else
             echo "No changes to commit"
