@@ -5,6 +5,3 @@
     <img alt="Parth's GitHub Profile README" src="https://raw.githubusercontent.com/parpsyche/parpsyche/main/light_mode.svg">
   </picture>
 </a>
-
-
-<!-- <a href="https://roadmap.sh/u/parpsyche"><img src="https://roadmap.sh/card/wide/660aefacda1671f986f8b883?variant=dark" alt="Parth's learning progress"/></a> -->
