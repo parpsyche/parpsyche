@@ -1,29 +1,35 @@
 name: Update GitHub Stats
+
 on:
   schedule:
     - cron: "0 */6 * * *"
   workflow_dispatch:
 
+permissions:
+  contents: write
+
 jobs:
   update:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
       - name: Fetch GitHub Stats
-        id: stats
         run: |
           curl -H "Accept: application/vnd.github+json" \
-            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-            https://api.github.com/users/${{ github.repository_owner }} > stats.json
-          echo "::set-output name=data::$(cat stats.json)"
+            -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" \
+            https://api.github.com/users/${{ github.repository_owner }} > github-stats.json
 
-      - name: Save stats.json
+      - name: Commit changes if any
         run: |
-          mv stats.json github-stats.json
-          git config user.name "github-actions[bot]"
-          git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add github-stats.json
-          git commit -m "Update GitHub stats"
-          git push
+          if ! git diff --quiet; then
+            git config user.name "github-actions[bot]"
+            git config user.email "github-actions[bot]@users.noreply.github.com"
+            git add github-stats.json
+            git commit -m "Update GitHub stats"
+            git push
+          else
+            echo "No changes to commit"
+          fi
