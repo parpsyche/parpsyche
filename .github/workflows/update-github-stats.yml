@@ -1,4 +1,4 @@
-name: Update GitHub Stats SVG + JSON
+name: Update GitHub Stats README + JSON
 
 on:
   schedule:
@@ -9,7 +9,7 @@ permissions:
   contents: write
 
 jobs:
-  update_svg:
+  update_readme:
     runs-on: ubuntu-latest
 
     steps:
@@ -74,29 +74,21 @@ jobs:
             '{repos:($repos|tonumber),stars:($stars|tonumber),followers:($followers|tonumber),following:($following|tonumber)}' \
             > github-stats.min.json
 
-      - name: Update dark_mode.svg
+      - name: Update README.md
         run: |
-          sed -i "s/id=\"repo_data\">[0-9]\+/id=\"repo_data\">$repos/" dark_mode.svg
-          sed -i "s/id=\"star_data\">[0-9]\+/id=\"star_data\">$stars/" dark_mode.svg
-          sed -i "s/id=\"follower_data\">[0-9]\+/id=\"follower_data\">$followers/" dark_mode.svg
-          sed -i "s/id=\"following_data\">[0-9]\+/id=\"following_data\">$following/" dark_mode.svg
-          sed -i "s/id=\"uptime_data\">[^<]*/id=\"uptime_data\">$uptime/" dark_mode.svg
-
-      - name: Update light_mode.svg
-        run: |
-          sed -i "s/id=\"repo_data\">[0-9]\+/id=\"repo_data\">$repos/" light_mode.svg
-          sed -i "s/id=\"star_data\">[0-9]\+/id=\"star_data\">$stars/" light_mode.svg
-          sed -i "s/id=\"follower_data\">[0-9]\+/id=\"follower_data\">$followers/" light_mode.svg
-          sed -i "s/id=\"following_data\">[0-9]\+/id=\"following_data\">$following/" light_mode.svg
-          sed -i "s/id=\"uptime_data\">[^<]*/id=\"uptime_data\">$uptime/" light_mode.svg
+          sed -i "s/^Repos      = .*/Repos      = $repos/" README.md
+          sed -i "s/^Stars      = .*/Stars      = $stars/" README.md
+          sed -i "s/^Followers  = .*/Followers  = $followers/" README.md
+          sed -i "s/^Following  = .*/Following  = $following/" README.md
+          sed -i "s/^Uptime     = .*/Uptime     = $uptime/" README.md
 
       - name: Commit changes if any
         run: |
           if ! git diff --quiet; then
             git config user.name "github-actions[bot]"
             git config user.email "github-actions[bot]@users.noreply.github.com"
-            git add github-stats.min.json dark_mode.svg light_mode.svg
-            git commit -m "Update GitHub stats + SVGs [skip ci]"
+            git add README.md github-stats.min.json
+            git commit -m "Update GitHub stats [skip ci]"
             git push
           else
             echo "No changes to commit"
