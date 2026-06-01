@@ -11,11 +11,11 @@ Handle     = parpsyche
 Role       = Full Stack Builder | Python Developer | AI Engineer
 
 [stats]
-Repos      = 15
-Stars      = 12
+Repos      = 16
+Stars      = 2
 Followers  = 4
-Following  = 7
-Uptime     = 25 years, 10 months, 24 days
+Following  = 9
+Uptime     = 25 years, 10 months, 25 days
 
 [languages]
 Programming = Python, JavaScript, Go
