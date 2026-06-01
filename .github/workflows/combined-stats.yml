@@ -1,0 +1,45 @@
+name: generate combined tech stats
+
+on:
+  schedule:
+    - cron: "0 */12 * * *"
+  workflow_dispatch:
+  push:
+    branches:
+    - main
+    paths:
+    - scripts/generate_combined_stats.py
+
+jobs:
+  generate:
+    permissions: 
+      contents: write
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    
+    steps:
+      - uses: actions/checkout@v4
+      
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+          
+      - name: Install dependencies
+        run: pip install requests
+        
+      - name: Generate Combined Stats
+        env:
+          GH_TOKEN_1: ${{ secrets.GH_TOKEN_1 }}
+          GH_TOKEN_2: ${{ secrets.GH_TOKEN_2 }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: python scripts/generate_combined_stats.py
+          
+      - name: Push combined-tech-stats.svg to output branch
+        uses: crazy-max/ghaction-github-pages@v3.1.0
+        with:
+          target_branch: output
+          build_dir: dist
+          keep_history: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
