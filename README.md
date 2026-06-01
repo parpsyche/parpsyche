@@ -1,22 +1,11 @@
-<h1 align="center">Hi there, I'm Parth 👋</h1>
+<h1 align="center">Hi there, I'm Parth (parpsyche) Sachdeva 👋</h1>
 
 <p align="center">
-  <b>Python Developer & AI Enthusiast</b> <br>
+  <b>I'm a full time builder + Python Developer + AI Engineer</b> <br>
   <a href="https://x.com/parpsyche">Twitter</a> •
   <a href="https://github.com/parpsyche">GitHub</a>
 </p>
 
-### 🛠️ Tech Stack & Skills
-<p>
-  <img src="https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white" alt="Python" />
-  <img src="https://img.shields.io/badge/TensorFlow-FF6F00?style=for-the-badge&logo=tensorflow&logoColor=white" alt="TensorFlow" />
-  <img src="https://img.shields.io/badge/PyTorch-EE4C2C?style=for-the-badge&logo=pytorch&logoColor=white" alt="PyTorch" />
-  <img src="https://img.shields.io/badge/OpenAI-412991?style=for-the-badge&logo=openai&logoColor=white" alt="OpenAI" />
-  <img src="https://img.shields.io/badge/Scikit--Learn-F7931E?style=for-the-badge&logo=scikit-learn&logoColor=white" alt="Scikit-Learn" />
-  <img src="https://img.shields.io/badge/Pandas-150458?style=for-the-badge&logo=pandas&logoColor=white" alt="Pandas" />
-</p>
-
-### 📊 GitHub Stats
 
 <div align="center">
   <a href="https://github.com/parpsyche/parpsyche">
@@ -38,7 +27,7 @@
   </picture>
 </div>
 
-### 📈 Weekly Combined Tech Stats (parpsyche + parths-infiswift)
+### 📈 Contribution Stats
 
 <div align="center">
   <picture>

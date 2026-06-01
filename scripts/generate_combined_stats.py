@@ -5,35 +5,27 @@ import datetime
 from collections import defaultdict
 import xml.etree.ElementTree as ET
 
-def fetch_weekly_contributions(token, username):
+def fetch_contribution_calendar(token, username):
     headers = {
         "Authorization": f"Bearer {token}",
         "Content-Type": "application/json"
     }
     
-    # Calculate timestamp for 7 days ago
-    from_date = (datetime.datetime.utcnow() - datetime.timedelta(days=7)).isoformat() + "Z"
+    # Fetch last 30 days
+    to_date = datetime.datetime.utcnow()
+    from_date = to_date - datetime.timedelta(days=30)
     
     query = """
-    query($login: String!, $from: DateTime!) {
+    query($login: String!, $from: DateTime!, $to: DateTime!) {
       user(login: $login) {
-        contributionsCollection(from: $from) {
-          commitContributionsByRepository(maxRepositories: 100) {
-            repository {
-              name
-              owner { login }
-              languages(first: 10, orderBy: {field: SIZE, direction: DESC}) {
-                edges {
-                  size
-                  node {
-                    name
-                    color
-                  }
-                }
+        contributionsCollection(from: $from, to: $to) {
+          contributionCalendar {
+            totalContributions
+            weeks {
+              contributionDays {
+                contributionCount
+                date
               }
-            }
-            contributions {
-              totalCount
             }
           }
         }
@@ -43,7 +35,8 @@ def fetch_weekly_contributions(token, username):
     
     variables = {
         "login": username,
-        "from": from_date
+        "from": from_date.isoformat() + "Z",
+        "to": to_date.isoformat() + "Z"
     }
     
     response = requests.post(
@@ -61,10 +54,18 @@ def fetch_weekly_contributions(token, username):
         print(f"GraphQL Errors for {username}: {data['errors']}")
         return []
         
-    return data.get("data", {}).get("user", {}).get("contributionsCollection", {}).get("commitContributionsByRepository", [])
+    weeks = data.get("data", {}).get("user", {}).get("contributionsCollection", {}).get("contributionCalendar", {}).get("weeks", [])
+    
+    days = []
+    for week in weeks:
+        for day in week.get("contributionDays", []):
+            days.append(day)
+            
+    # Filter to exactly the last 30 days as GraphQL might return slightly more
+    days_dict = {d["date"]: d["contributionCount"] for d in days}
+    return days_dict
 
 def main():
-    # Use standard GITHUB_TOKEN if available, else require a PAT
     token1 = os.environ.get("GH_TOKEN_1") or os.environ.get("GITHUB_TOKEN")
     token2 = os.environ.get("GH_TOKEN_2") or token1
     
@@ -73,8 +74,7 @@ def main():
         {"name": "parths-infiswift", "token": token2}
     ]
     
-    language_stats = defaultdict(lambda: {"size": 0, "color": "#858585", "commits": 0})
-    total_size = 0
+    combined_contributions = defaultdict(int)
     
     for u in usernames:
         if not u["token"]:
@@ -82,101 +82,100 @@ def main():
             continue
             
         print(f"Fetching data for {u['name']}...")
-        repos = fetch_weekly_contributions(u["token"], u["name"])
-        
-        for repo_contrib in repos:
-            repo = repo_contrib["repository"]
-            commits = repo_contrib["contributions"]["totalCount"]
-            languages = repo.get("languages", {}).get("edges", [])
-            
-            # Distribute commit weight by language size in repo
-            # This is an approximation since GitHub doesn't give languages per commit
-            repo_total_size = sum(edge["size"] for edge in languages)
-            
-            for edge in languages:
-                lang_name = edge["node"]["name"]
-                lang_color = edge["node"]["color"] or "#858585"
-                lang_size = edge["size"]
-                
-                # Approximate size added by this user this week (just using raw size or we can use commits)
-                # Let's use a blended metric: repo_lang_ratio * user_commits
-                if repo_total_size > 0:
-                    ratio = lang_size / repo_total_size
-                    weight = commits * ratio
-                    language_stats[lang_name]["size"] += weight
-                    language_stats[lang_name]["color"] = lang_color
-                    language_stats[lang_name]["commits"] += commits * ratio
-                    total_size += weight
+        days_dict = fetch_contribution_calendar(u["token"], u["name"])
+        for date_str, count in days_dict.items():
+            combined_contributions[date_str] += count
 
-    if total_size == 0:
-        print("No language data found for the past week.")
-        # Fallback to empty state
-        generate_svg({}, 0)
-        return
-        
-    # Sort languages by size
-    sorted_langs = sorted(language_stats.items(), key=lambda x: x[1]["size"], reverse=True)
+    # Generate dates for the last 30 days
+    today = datetime.date.today()
+    dates = [(today - datetime.timedelta(days=i)).isoformat() for i in range(29, -1, -1)]
     
-    # Take top 5, group rest into "Other"
-    top_langs = sorted_langs[:5]
-    other_size = sum(lang[1]["size"] for lang in sorted_langs[5:])
-    if other_size > 0:
-         top_langs.append(("Other", {"size": other_size, "color": "#ededed", "commits": 0}))
-         
-    generate_svg(top_langs, total_size)
-    generate_svg(top_langs, total_size, dark_mode=True)
+    counts = [combined_contributions.get(d, 0) for d in dates]
+    
+    generate_line_graph(dates, counts)
+    generate_line_graph(dates, counts, dark_mode=True)
 
-def generate_svg(top_langs, total_size, dark_mode=False):
-    width = 400
+def generate_line_graph(dates, counts, dark_mode=False):
+    width = 600
     height = 200
+    padding_left = 40
+    padding_bottom = 30
+    padding_top = 40
+    padding_right = 20
     
     bg_color = "#0d1117" if dark_mode else "#ffffff"
     text_color = "#c9d1d9" if dark_mode else "#24292f"
     border_color = "#30363d" if dark_mode else "#e1e4e8"
+    line_color = "#2ea043" if dark_mode else "#2da44e"
+    fill_color = "rgba(46, 160, 67, 0.2)" if dark_mode else "rgba(45, 164, 78, 0.2)"
+    grid_color = "#21262d" if dark_mode else "#ebedf0"
     
     svg = ET.Element("svg", width=str(width), height=str(height), viewBox=f"0 0 {width} {height}", fill="none", xmlns="http://www.w3.org/2000/svg")
     ET.SubElement(svg, "style").text = f"""
         .title {{ font: 600 16px 'Segoe UI', Ubuntu, Sans-Serif; fill: {text_color}; }}
-        .lang-name {{ font: 400 12px 'Segoe UI', Ubuntu, Sans-Serif; fill: {text_color}; }}
-        .lang-stat {{ font: 400 12px 'Segoe UI', Ubuntu, Sans-Serif; fill: #8b949e; }}
+        .label {{ font: 400 10px 'Segoe UI', Ubuntu, Sans-Serif; fill: #8b949e; }}
     """
     
     ET.SubElement(svg, "rect", x="0", y="0", width=str(width), height=str(height), rx="4.5", fill=bg_color, stroke=border_color)
-    ET.SubElement(svg, "text", x="25", y="35", **{"class": "title"}).text = "Weekly Tech Stack (Both Profiles)"
     
-    if not top_langs or total_size == 0:
-         ET.SubElement(svg, "text", x="25", y="70", **{"class": "lang-name"}).text = "No contributions this week."
-    else:
-        # Draw bar
-        bar_x = 25
-        bar_y = 55
-        bar_w = 350
-        bar_h = 10
-        ET.SubElement(svg, "rect", x=str(bar_x), y=str(bar_y), width=str(bar_w), height=str(bar_h), rx="5", fill="#ebedf0")
+    total_commits = sum(counts)
+    ET.SubElement(svg, "text", x="20", y="25", **{"class": "title"}).text = f"30-Day Contributions: {total_commits} (Combined)"
+    
+    if not counts:
+        ET.SubElement(svg, "text", x="20", y="100", **{"class": "label"}).text = "No data"
+        suffix = "-dark" if dark_mode else ""
+        filename = f"dist/combined-tech-stats{suffix}.svg"
+        os.makedirs("dist", exist_ok=True)
+        tree = ET.ElementTree(svg)
+        ET.indent(tree, space="  ", level=0)
+        tree.write(filename, encoding="utf-8", xml_declaration=True)
+        return
         
-        current_x = bar_x
-        for lang_name, lang_data in top_langs:
-            ratio = lang_data["size"] / total_size
-            w = bar_w * ratio
-            if w > 0:
-                ET.SubElement(svg, "rect", x=str(current_x), y=str(bar_y), width=str(w), height=str(bar_h), rx="5" if current_x==bar_x or (current_x+w)>=(bar_x+bar_w) else "0", fill=lang_data["color"])
-                current_x += w
-                
-        # Draw legend
-        leg_y = 85
-        col1_x = 25
-        col2_x = 200
+    max_count = max(counts)
+    if max_count == 0:
+        max_count = 5 # default scale
+
+    # Drawing grid and y-labels
+    graph_width = width - padding_left - padding_right
+    graph_height = height - padding_top - padding_bottom
+    
+    y_steps = 4
+    for i in range(y_steps + 1):
+        y = padding_top + graph_height - (i * graph_height / y_steps)
+        val = int(i * max_count / y_steps)
+        ET.SubElement(svg, "line", x1=str(padding_left), y1=str(y), x2=str(width-padding_right), y2=str(y), stroke=grid_color, stroke_width="1")
+        ET.SubElement(svg, "text", x=str(padding_left-10), y=str(y+3), text_anchor="end", **{"class": "label"}).text = str(val)
+
+    # Calculate points
+    points = []
+    x_step = graph_width / (len(counts) - 1)
+    for i, count in enumerate(counts):
+        x = padding_left + (i * x_step)
+        y = padding_top + graph_height - (count / max_count * graph_height)
+        points.append((x, y))
         
-        for i, (lang_name, lang_data) in enumerate(top_langs):
-            ratio = lang_data["size"] / total_size
-            pct = f"{ratio * 100:.1f}%"
-            
-            x = col1_x if i % 2 == 0 else col2_x
-            y = leg_y + (i // 2) * 25
-            
-            ET.SubElement(svg, "circle", cx=str(x+5), cy=str(y-4), r="5", fill=lang_data["color"])
-            ET.SubElement(svg, "text", x=str(x+15), y=str(y), **{"class": "lang-name"}).text = lang_name
-            ET.SubElement(svg, "text", x=str(x+100), y=str(y), **{"class": "lang-stat"}).text = pct
+    # Draw area fill
+    path_data = f"M {points[0][0]} {padding_top + graph_height} "
+    for x, y in points:
+        path_data += f"L {x} {y} "
+    path_data += f"L {points[-1][0]} {padding_top + graph_height} Z"
+    
+    ET.SubElement(svg, "path", d=path_data, fill=fill_color)
+    
+    # Draw line
+    line_data = f"M {points[0][0]} {points[0][1]} "
+    for x, y in points[1:]:
+        line_data += f"L {x} {y} "
+        
+    ET.SubElement(svg, "path", d=line_data, fill="none", stroke=line_color, stroke_width="2", stroke_linejoin="round", stroke_linecap="round")
+    
+    # Draw points (optional, maybe too cluttered for 30 points, just do line)
+    
+    # X-axis labels (first and last date)
+    first_date = datetime.datetime.strptime(dates[0], "%Y-%m-%d").strftime("%b %d")
+    last_date = datetime.datetime.strptime(dates[-1], "%Y-%m-%d").strftime("%b %d")
+    ET.SubElement(svg, "text", x=str(padding_left), y=str(height-10), text_anchor="start", **{"class": "label"}).text = first_date
+    ET.SubElement(svg, "text", x=str(width-padding_right), y=str(height-10), text_anchor="end", **{"class": "label"}).text = last_date
 
     suffix = "-dark" if dark_mode else ""
     filename = f"dist/combined-tech-stats{suffix}.svg"
