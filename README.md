@@ -13,9 +13,9 @@ Role       = Full Stack Builder | Python Developer | AI Engineer
 [stats]
 Repos      = 16
 Stars      = 2
-Followers  = 6
+Followers  = 5
 Following  = 10
-Uptime     = 26 years, 3 months, 20 days
+Uptime     = 26 years, 3 months, 21 days
 
 [languages]
 Programming = Python, JavaScript, Go
