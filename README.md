@@ -15,7 +15,7 @@ Repos      = 16
 Stars      = 2
 Followers  = 5
 Following  = 10
-Uptime     = 26 years, 4 months, 3 days
+Uptime     = 26 years, 4 months, 4 days
 
 [languages]
 Programming = Python, JavaScript, Go
